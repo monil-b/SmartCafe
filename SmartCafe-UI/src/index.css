@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		--background: 210 20% 96%;
+		--foreground: 222 24% 12%;
+		--card: 0 0% 100%;
+		--card-foreground: 222 24% 12%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 222 24% 12%;
+		--primary: 24 95% 56%;
+		--primary-foreground: 0 0% 100%;
+		--secondary: 210 16% 90%;
+		--secondary-foreground: 222 24% 12%;
+		--muted: 210 16% 93%;
+		--muted-foreground: 220 10% 44%;
+		--accent: 24 100% 94%;
+		--accent-foreground: 24 90% 32%;
+		--destructive: 0 82% 58%;
+		--destructive-foreground: 0 0% 100%;
+		--border: 214 16% 86%;
+		--input: 214 16% 90%;
+		--ring: 24 95% 56%;
+		--radius: 1rem;
+	}
+
+	.dark {
+		--background: 222 25% 8%;
+		--foreground: 210 40% 98%;
+		--card: 222 25% 11%;
+		--card-foreground: 210 40% 98%;
+		--popover: 222 25% 10%;
+		--popover-foreground: 210 40% 98%;
+		--primary: 24 95% 60%;
+		--primary-foreground: 222 25% 9%;
+		--secondary: 222 20% 18%;
+		--secondary-foreground: 210 40% 98%;
+		--muted: 222 20% 15%;
+		--muted-foreground: 215 20% 68%;
+		--accent: 24 45% 20%;
+		--accent-foreground: 24 100% 88%;
+		--destructive: 0 72% 54%;
+		--destructive-foreground: 0 0% 100%;
+		--border: 222 20% 20%;
+		--input: 222 20% 20%;
+		--ring: 24 95% 60%;
+	}
+
+	* {
+		border-color: hsl(var(--border));
+	}
+
+	html {
+		@apply scroll-smooth;
+	}
+
+	body {
+		@apply bg-background text-foreground antialiased;
+		font-family: "Geist Variable", sans-serif;
+		background-image:
+			radial-gradient(circle at top left, hsl(var(--primary) / 0.1), transparent 28%),
+			radial-gradient(circle at top right, hsl(var(--accent) / 0.18), transparent 24%),
+			linear-gradient(180deg, hsl(var(--background)), hsl(var(--background) / 0.92));
+		background-attachment: fixed;
+	}
+
+	#root {
+		min-height: 100vh;
+	}
+}
