@@ -9,6 +9,10 @@ import {
   Flame,
   Star,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getProducts, type Product } from "@/api/productApi";
+import { useCart } from "@/context/CartContext";
 
 const categories = [
   {
@@ -34,6 +38,23 @@ const categories = [
 ];
 
 const Home = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const data = await getProducts();
+
+      setProducts(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="space-y-0">
       <section className="relative min-h-[80vh] overflow-hidden bg-black text-white">
@@ -65,17 +86,12 @@ const Home = () => {
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row">
-              <Button className="rounded-full bg-primary px-7 text-base hover:bg-primary/90">
-                Explore Menu
-                <ArrowRight className="size-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                className="rounded-full border-white/20 bg-white/5 px-7 text-base text-white hover:bg-white hover:text-black"
-              >
-                View Dashboard
-              </Button>
+              <Link to="/menu">
+                <Button className="rounded-full bg-primary px-7 text-base hover:bg-primary/90">
+                  Explore Menu
+                  <ArrowRight className="size-4" />
+                </Button>
+              </Link>
             </div>
 
             <div className="grid gap-4 pt-4 sm:grid-cols-3">
@@ -154,29 +170,7 @@ const Home = () => {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {[
-              {
-                name: "Cold Coffee",
-                price: 120,
-                image:
-                  "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
-                description: "Refreshing cold coffee with ice cream.",
-              },
-              {
-                name: "Cheese Burger",
-                price: 180,
-                image:
-                  "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80",
-                description: "Loaded burger with crispy fries.",
-              },
-              {
-                name: "Margherita Pizza",
-                price: 250,
-                image:
-                  "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
-                description: "Fresh pizza with mozzarella cheese.",
-              },
-            ].map((item) => (
+            {products.slice(0, 3).map((item) => (
               <Card
                 key={item.name}
                 className="overflow-hidden text-slate-900 dark:bg-zinc-100 dark:text-slate-900"
@@ -204,7 +198,18 @@ const Home = () => {
 
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-bold">₹{item.price}</span>
-                      <Button className="rounded-full bg-primary px-5 hover:bg-primary/90">
+                      <Button
+                        className="rounded-full bg-primary px-5 hover:bg-primary/90"
+                        onClick={() =>
+                          addToCart({
+                            _id: item._id!,
+                            name: item.name,
+                            price: item.price,
+                            image: item.image || "",
+                            quantity: 1,
+                          })
+                        }
+                      >
                         Add
                       </Button>
                     </div>
@@ -271,10 +276,12 @@ const Home = () => {
             </p>
           </div>
 
-          <Button className="rounded-full bg-white px-7 text-base text-black hover:bg-white/90">
-            Order Now
-            <ArrowRight className="size-4" />
-          </Button>
+          <Link to="/menu">
+            <Button className="rounded-full bg-white px-7 text-base text-black hover:bg-white/90">
+              Order Now
+              <ArrowRight className="size-4" />
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

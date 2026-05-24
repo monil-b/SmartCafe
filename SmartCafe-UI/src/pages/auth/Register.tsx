@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { registerUser } from "../../api/authApi";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,6 +11,11 @@ import { Label } from "@/components/ui/label";
 const Register = () => {
   const navigate = useNavigate();
 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const handleBack = () => {
     if (window.history.length > 1) {
       navigate(-1);
@@ -16,6 +23,33 @@ const Register = () => {
     }
 
     navigate("/");
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const data = await registerUser({
+        name,
+        email,
+        password,
+      });
+
+      console.log(data);
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      alert("Register Successful");
+    } catch (error: any) {
+      console.log(error);
+      alert(error.response?.data?.message || "Register failed");
+    }
   };
 
   return (
@@ -40,12 +74,14 @@ const Register = () => {
               Create your account
             </p>
 
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleRegister}>
               <div>
                 <Label>Full Name</Label>
                 <Input
                   type="text"
                   placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="mt-2 h-11 rounded-lg border border-input bg-background/70 p-3 shadow-sm"
                 />
               </div>
@@ -55,6 +91,8 @@ const Register = () => {
                 <Input
                   type="email"
                   placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="mt-2 h-11 rounded-lg border border-input bg-background/70 p-3 shadow-sm"
                 />
               </div>
@@ -64,6 +102,8 @@ const Register = () => {
                 <Input
                   type="password"
                   placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="mt-2 h-11 rounded-lg border border-input bg-background/70 p-3 shadow-sm"
                 />
               </div>
@@ -73,11 +113,16 @@ const Register = () => {
                 <Input
                   type="password"
                   placeholder="********"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="mt-2 h-11 rounded-lg border border-input bg-background/70 p-3 shadow-sm"
                 />
               </div>
 
-              <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium shadow-md">
+              <Button
+                type="submit"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium shadow-md"
+              >
                 Sign Up
               </Button>
             </form>

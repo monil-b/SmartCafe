@@ -1,4 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import {
+  createProduct,
+  deleteProduct,
+  updateProduct,
+  type ProductData,
+} from "@/api/adminProductApi";
+import { getProducts } from "@/api/productApi";
+
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,69 +49,105 @@ import {
 import { Plus, Pencil, Trash2, Sparkles } from "lucide-react";
 
 type Product = {
-  id: number;
+  _id?: string;
   name: string;
   price: number;
   category: string;
-  status: "Live" | "Draft";
+  status?: "Live" | "Draft";
   description: string;
+  image?: string;
 };
 
-const initialProducts: Product[] = [
-  {
-    id: 1,
-    name: "Cold Coffee",
-    price: 120,
-    category: "Beverage",
-    status: "Live",
-    description: "Refreshing cold coffee with ice cream.",
-  },
-  {
-    id: 2,
-    name: "Cheese Burger",
-    price: 180,
-    category: "Fast Food",
-    status: "Live",
-    description: "Loaded burger with crispy fries.",
-  },
-];
-
 const Products = () => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editProductId, setEditProductId] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     price: "",
     category: "Beverage",
     status: "Live" as Product["status"],
+    image: "",
     description: "",
   });
 
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const productCount = useMemo(() => products.length, [products]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setProducts((currentProducts) => [
-      {
-        id: currentProducts.length + 1,
-        name: form.name.trim(),
+    try {
+      const productData: ProductData = {
+        name: form.name,
         price: Number(form.price),
         category: form.category,
-        status: form.status,
-        description: form.description.trim(),
-      },
-      ...currentProducts,
-    ]);
+        image: form.image,
+        description: form.description,
+      };
 
-    setForm({
-      name: "",
-      price: "",
-      category: "Beverage",
-      status: "Live",
-      description: "",
-    });
-    setDialogOpen(false);
+      if (editProductId) {
+        const updatedProduct = await updateProduct(editProductId, productData);
+
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product._id === editProductId ? updatedProduct : product,
+          ),
+        );
+
+        toast.success("Product updated");
+      } else {
+        const newProduct = await createProduct(productData);
+
+        setProducts((prevProducts) => [newProduct, ...prevProducts]);
+
+        toast.success("Product created successfully");
+      }
+
+      setForm({
+        name: "",
+        price: "",
+        category: "Beverage",
+        status: "Live",
+        image: "",
+        description: "",
+      });
+      setEditProductId(null);
+
+      setDialogOpen(false);
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Failed to create product");
+    }
+  };
+
+  const handleDelete = async (productId: string) => {
+    try {
+      await deleteProduct(productId);
+
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product._id !== productId),
+      );
+
+      toast.success("Product deleted");
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Delete failed");
+    }
   };
 
   return (
@@ -134,7 +180,9 @@ const Products = () => {
 
             <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Add a product</DialogTitle>
+                <DialogTitle>
+                  {editProductId ? "Edit Product" : "Add Product"}
+                </DialogTitle>
                 <DialogDescription>
                   Capture the essentials first. You can expand this later with
                   images, stock tracking, and modifier groups.
@@ -226,6 +274,22 @@ const Products = () => {
                 </div>
 
                 <div className="grid gap-2">
+                  <Label htmlFor="image">Image URL</Label>
+
+                  <Input
+                    id="image"
+                    value={form.image}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        image: event.target.value,
+                      }))
+                    }
+                    placeholder="https://example.com/burger.jpg"
+                  />
+                </div>
+
+                <div className="grid gap-2">
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
@@ -277,9 +341,9 @@ const Products = () => {
 
             <TableBody>
               {products.map((product) => (
-                <TableRow key={product.id}>
+                <TableRow key={product._id}>
                   <TableCell className="pl-6 font-medium">
-                    {product.id}
+                    {product._id}
                   </TableCell>
                   <TableCell>
                     <div>
@@ -314,6 +378,20 @@ const Products = () => {
                       <Button
                         size="icon-sm"
                         variant="outline"
+                        onClick={() => {
+                          setEditProductId(product._id!);
+
+                          setForm({
+                            name: product.name,
+                            price: String(product.price),
+                            category: product.category,
+                            status: product.status || "Live",
+                            image: product.image || "",
+                            description: product.description,
+                          });
+
+                          setDialogOpen(true);
+                        }}
                         aria-label={`Edit ${product.name}`}
                         title="Edit"
                       >
@@ -323,6 +401,7 @@ const Products = () => {
                       <Button
                         size="icon-sm"
                         variant="destructive"
+                        onClick={() => handleDelete(product._id!)}
                         aria-label={`Delete ${product.name}`}
                         title="Delete"
                       >

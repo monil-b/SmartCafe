@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { loginUser } from "../../api/authApi";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,6 +11,9 @@ import { Label } from "@/components/ui/label";
 const Login = () => {
   const navigate = useNavigate();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const handleBack = () => {
     if (window.history.length > 1) {
       navigate(-1);
@@ -16,6 +21,34 @@ const Login = () => {
     }
 
     navigate("/");
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const data = await loginUser({
+        email,
+        password,
+      });
+
+      console.log(data);
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      alert("Login Successful");
+
+      if (data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (error: any) {
+      console.log(error);
+
+      alert(error.response?.data?.message || "Login failed");
+    }
   };
 
   return (
@@ -41,13 +74,15 @@ const Login = () => {
               Login to your account
             </p>
 
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleLogin}>
               <div>
                 <Label>Email</Label>
                 <Input
                   type="email"
                   placeholder="m@example.com"
                   className="mt-2 h-11 rounded-lg border border-input bg-background/70 p-3 shadow-sm"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
@@ -57,10 +92,15 @@ const Login = () => {
                   type="password"
                   placeholder="********"
                   className="mt-2 h-11 rounded-lg border border-input bg-background/70 p-3 shadow-sm"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
-              <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium shadow-md">
+              <Button
+                type="submit"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium shadow-md"
+              >
                 Sign In
               </Button>
             </form>

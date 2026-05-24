@@ -8,8 +8,11 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
+import { useCart } from "@/context/CartContext";
+
 const Navbar = () => {
   const location = useLocation();
+  const { cartItems } = useCart();
 
   const navLinks = [
     {
@@ -27,6 +30,8 @@ const Navbar = () => {
       path: "/orders",
     },
   ];
+
+  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
@@ -63,7 +68,7 @@ const Navbar = () => {
             <ShoppingCart className="h-6 w-6" />
 
             <Badge className="absolute -right-2 -top-2 h-5 min-w-5 rounded-full bg-primary px-1 text-primary-foreground">
-              2
+              {totalItems}
             </Badge>
           </Link>
 

@@ -38,6 +38,7 @@ const registerUser = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            token: generateToken(user._id),
         });
     } catch (error) {
         res.status(500).json({
@@ -83,7 +84,12 @@ const loginUser = async (req, res) => {
     }
 };
 
+const getUserProfile = async (req, res) => {
+    res.json(req.user);
+};
+
 module.exports = {
     registerUser,
     loginUser,
+    getUserProfile,
 };

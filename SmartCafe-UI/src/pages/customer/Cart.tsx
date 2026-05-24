@@ -1,25 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
-const cartItems = [
-  {
-    id: 1,
-    name: "Cold Coffee",
-    price: 120,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
-  },
-
-  {
-    id: 2,
-    name: "Cheese Burger",
-    price: 180,
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
-  },
-];
+import { useCart } from "@/context/CartContext";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
+  const { cartItems, addToCart, removeFromCart, decreaseQuantity } = useCart();
   // Empty Cart UI
   if (cartItems.length === 0) {
     return (
@@ -32,9 +17,11 @@ const Cart = () => {
           Add delicious food to your cart.
         </p>
 
-        <Button className="rounded-full bg-primary px-6 hover:bg-primary/90">
-          Explore Menu
-        </Button>
+        <Link to="/menu">
+          <Button className="rounded-full bg-primary px-6 hover:bg-primary/90">
+            Explore Menu
+          </Button>
+        </Link>
       </div>
     );
   }
@@ -61,7 +48,7 @@ const Cart = () => {
           {/* Cart Items */}
           <div className="space-y-4 lg:col-span-2">
             {cartItems.map((item) => (
-              <Card key={item.id}>
+              <Card key={item._id}>
                 <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
                   <img
                     src={item.image}
@@ -76,19 +63,31 @@ const Cart = () => {
 
                     {/* Quantity */}
                     <div className="mt-3 flex items-center gap-3">
-                      <Button size="sm" className="rounded-full">
+                      <Button
+                        size="sm"
+                        className="rounded-full"
+                        onClick={() => decreaseQuantity(item._id!)}
+                      >
                         -
                       </Button>
 
                       <span>{item.quantity}</span>
 
-                      <Button size="sm" className="rounded-full">
+                      <Button
+                        size="sm"
+                        className="rounded-full"
+                        onClick={() => addToCart(item)}
+                      >
                         +
                       </Button>
                     </div>
                   </div>
 
-                  <Button variant="destructive" className="rounded-full">
+                  <Button
+                    variant="destructive"
+                    className="rounded-full"
+                    onClick={() => removeFromCart(item._id!)}
+                  >
                     Remove
                   </Button>
                 </CardContent>
