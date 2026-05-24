@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import MenuCard from "@/components/menu/MenuCard";
-import { menuItems } from "@/utils/dummyData";
+import { getProducts, type Product } from "@/api/productApi";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +12,25 @@ const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const [search, setSearch] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredItems = menuItems.filter((item) => {
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredItems = products.filter((item) => {
     const matchesCategory =
       selectedCategory === "All" || item.category === selectedCategory;
 
@@ -23,6 +40,14 @@ const Menu = () => {
 
     return matchesCategory && matchesSearch;
   });
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <h1 className="text-2xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background px-6 py-20 text-foreground">
@@ -68,7 +93,8 @@ const Menu = () => {
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {filteredItems.map((item) => (
             <MenuCard
-              key={item.id}
+              key={item._id}
+              _id={item._id}
               name={item.name}
               price={item.price}
               image={item.image}

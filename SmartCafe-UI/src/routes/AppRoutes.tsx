@@ -16,6 +16,9 @@ import Products from "@/pages/admin/Products";
 import Users from "@/pages/admin/Users";
 import AdminOrders from "@/pages/admin/Orders";
 
+import ProtectedRoute from "./ProtectedRoute";
+import AdminRoute from "./AdminRoute";
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
@@ -24,8 +27,10 @@ const AppRoutes = () => {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/orders" element={<Orders />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/orders" element={<Orders />} />
+          </Route>
         </Route>
 
         {/* Auth Routes */}
@@ -33,11 +38,13 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
 
         {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="users" element={<Users />} />
-          <Route path="orders" element={<AdminOrders />} />
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<Products />} />
+            <Route path="users" element={<Users />} />
+            <Route path="orders" element={<AdminOrders />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
