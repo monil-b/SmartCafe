@@ -1,10 +1,16 @@
+import { createOrder } from "@/api/orderApi";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, addToCart, removeFromCart, decreaseQuantity } = useCart();
+  const navigate = useNavigate();
+  const { cartItems, addToCart, removeFromCart, decreaseQuantity, clearCart } =
+    useCart();
+
   // Empty Cart UI
   if (cartItems.length === 0) {
     return (
@@ -31,6 +37,29 @@ const Cart = () => {
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
+
+  const handleCheckout = async () => {
+    try {
+      const orderItems = cartItems.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        image: item.image,
+        price: item.price,
+        product: item._id,
+      }));
+
+      await createOrder(orderItems, total);
+
+      toast.success("Order placed successfully");
+
+      clearCart();
+      navigate("/orders");
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Failed to place order");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background px-6 py-20 text-foreground">
@@ -118,7 +147,10 @@ const Cart = () => {
                 </div>
               </div>
 
-              <Button className="mt-6 w-full rounded-full bg-primary hover:bg-primary/90">
+              <Button
+                className="mt-6 w-full rounded-full bg-primary hover:bg-primary/90"
+                onClick={handleCheckout}
+              >
                 Proceed to Checkout
               </Button>
             </CardContent>

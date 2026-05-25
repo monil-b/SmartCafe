@@ -1,6 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-
-import { ShoppingCart, Menu, Coffee } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ShoppingCart, Menu, Coffee, LogOut, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +17,7 @@ import { useCart } from "@/context/CartContext";
 
 const Navbar = () => {
   const location = useLocation();
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "null");
   const { cartItems } = useCart();
 
   const navLinks = [
@@ -75,17 +81,56 @@ const Navbar = () => {
           <ThemeToggle />
 
           {/* Buttons */}
-          <Link to="/login">
-            <Button variant="outline" className="rounded-full">
-              Login
-            </Button>
-          </Link>
+          {userInfo ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex h-10 w-10 items-center justify-center rounded-full bg-primary font-semibold text-white">
+                  {userInfo.name.charAt(0).toUpperCase()}
+                </button>
+              </DropdownMenuTrigger>
 
-          <Link to="/register">
-            <Button className="rounded-full bg-primary hover:bg-primary/90">
-              Register
-            </Button>
-          </Link>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+
+                {userInfo.role === "admin" && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">Admin Dashboard</Link>
+                  </DropdownMenuItem>
+                )}
+
+                <DropdownMenuItem
+                  onClick={() => {
+                    localStorage.removeItem("userInfo");
+
+                    window.location.href = "/login";
+                  }}
+                  className="text-red-500"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="outline" className="rounded-full">
+                  Login
+                </Button>
+              </Link>
+
+              <Link to="/register">
+                <Button className="rounded-full bg-primary hover:bg-primary/90">
+                  Register
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -124,13 +169,40 @@ const Navbar = () => {
                   Cart
                 </Link>
 
-                <Link to="/login" className="text-lg font-medium">
-                  Login
-                </Link>
+                {userInfo ? (
+                  <>
+                    <Link to="/profile" className="text-lg font-medium">
+                      Profile
+                    </Link>
 
-                <Link to="/register" className="text-lg font-medium">
-                  Register
-                </Link>
+                    {userInfo.role === "admin" && (
+                      <Link to="/admin" className="text-lg font-medium">
+                        Admin Dashboard
+                      </Link>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("userInfo");
+
+                        window.location.href = "/login";
+                      }}
+                      className="text-left text-lg font-medium text-red-500"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className="text-lg font-medium">
+                      Login
+                    </Link>
+
+                    <Link to="/register" className="text-lg font-medium">
+                      Register
+                    </Link>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>

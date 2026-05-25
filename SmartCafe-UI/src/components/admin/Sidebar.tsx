@@ -6,6 +6,7 @@ import {
   Users,
   ClipboardList,
   Menu,
+  ArrowLeft,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,12 @@ const SidebarContent = () => {
 
   return (
     <div className="flex h-full flex-col border-r border-border/70 bg-card/90 text-card-foreground shadow-xl backdrop-blur-xl">
+      <Link
+        to="/"
+        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-background transition hover:bg-muted"
+      >
+        <ArrowLeft className="h-4 w-4" />
+      </Link>
       <div className="border-b border-border/70 px-5 py-6">
         <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
           SmartCafe
