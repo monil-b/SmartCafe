@@ -46,7 +46,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Sparkles } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 type Product = {
   _id?: string;
@@ -94,6 +94,7 @@ const Products = () => {
         name: form.name,
         price: Number(form.price),
         category: form.category,
+        status: form.status,
         image: form.image,
         description: form.description,
       };
@@ -165,9 +166,14 @@ const Products = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="rounded-2xl border border-border/70 bg-muted/50 px-4 py-3 text-sm shadow-sm">
-            <p className="text-muted-foreground">Total items</p>
-            <p className="text-lg font-semibold">{productCount}</p>
+          <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Total Items
+              </p>
+
+              <p className="text-2xl font-bold">{productCount}</p>
+            </div>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -306,10 +312,7 @@ const Products = () => {
                 </div>
 
                 <DialogFooter>
-                  <Button type="submit">
-                    <Sparkles className="size-4" />
-                    Save Product
-                  </Button>
+                  <Button type="submit">Save Product</Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -330,50 +333,67 @@ const Products = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="pl-6">ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="pr-6 text-right">Actions</TableHead>
+                <TableHead className="px-6">ID</TableHead>
+                <TableHead className="min-w-[280px] px-6">Name</TableHead>
+                <TableHead className="w-[180px] px-6">Category</TableHead>
+                <TableHead className="w-[120px] text-right px-6">
+                  Price
+                </TableHead>
+                <TableHead className="w-[120px] px-6">Status</TableHead>
+                <TableHead className="px-6 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {products.map((product) => (
                 <TableRow key={product._id}>
-                  <TableCell className="pl-6 font-medium">
-                    {product._id}
+                  <TableCell className="px-6 font-medium text-muted-foreground">
+                    #{product._id?.slice(-6)}
                   </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {product.name}
-                      </p>
-                      <p className="max-w-[22rem] text-sm text-muted-foreground">
-                        {product.description}
-                      </p>
+                  <TableCell className="min-w-[280px] px-6">
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={product.image || "/placeholder.jpg"}
+                        alt={product.name}
+                        className="h-14 w-14 rounded-xl object-cover border"
+                      />
+
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {product.name}
+                        </p>
+
+                        <p className="max-w-[14rem] text-sm text-muted-foreground">
+                          {product.description}
+                        </p>
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell>₹{product.price}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>
+                  <TableCell className="w-[180px] px-6">
+                    <Badge
+                      variant="secondary"
+                      className="rounded-full px-3 py-1"
+                    >
+                      {product.category}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="w-[120px] text-right font-semibold px-6">
+                    ₹{product.price}
+                  </TableCell>
+                  <TableCell className="w-[120px] px-6">
                     <div className="flex items-center">
                       <Badge
-                        variant={
-                          product.status === "Live" ? "default" : "outline"
-                        }
                         className={
-                          product.status === "Live"
-                            ? "bg-emerald-100 text-emerald-800 border-transparent"
-                            : ""
+                          (product.status || "Live") === "Draft"
+                            ? "border border-amber-500/20 bg-amber-500/15 px-3 py-1 text-amber-600 hover:bg-amber-500/15"
+                            : "border border-emerald-500/20 bg-emerald-500/15 px-3 py-1 text-emerald-600 hover:bg-emerald-500/15"
                         }
                       >
-                        {product.status}
+                        {product.status || "Live"}
                       </Badge>
                     </div>
                   </TableCell>
-                  <TableCell className="pr-6">
+                  <TableCell className="px-6">
                     <div className="flex justify-end gap-2">
                       <Button
                         size="icon-sm"

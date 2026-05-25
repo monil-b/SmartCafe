@@ -7,6 +7,7 @@ import Home from "@/pages/customer/Home";
 import Menu from "@/pages/customer/Menu";
 import Cart from "@/pages/customer/Cart";
 import Orders from "@/pages/customer/Orders";
+import Profile from "@/pages/customer/Profile";
 
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
@@ -30,6 +31,7 @@ const AppRoutes = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/cart" element={<Cart />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
 

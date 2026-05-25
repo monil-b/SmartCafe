@@ -1,0 +1,89 @@
+const Order = require("../models/orderModel");
+
+// CREATE ORDER
+const createOrder = async (req, res) => {
+  try {
+    const { orderItems, totalPrice } = req.body;
+
+    if (orderItems.length === 0) {
+      return res.status(400).json({
+        message: "No order items",
+      });
+    }
+
+    const order = await Order.create({
+      user: req.user._id,
+      orderItems,
+      totalPrice,
+    });
+
+    res.status(201).json(order);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// GET MY ORDERS
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({
+      user: req.user._id,
+    });
+
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// GET ALL ORDERS (ADMIN)
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find().populate(
+      "user",
+      "name email"
+    );
+
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// UPDATE ORDER STATUS (ADMIN)
+const updateOrderStatus = async (req, res) => {
+  try {
+    const order = await Order.findById(
+      req.params.id
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    order.status = req.body.status;
+
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  createOrder,
+  getMyOrders,
+  getAllOrders,
+  updateOrderStatus,
+};
