@@ -5,8 +5,10 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Loader from "@/components/common/Loader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -29,10 +32,11 @@ const Register = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
+    setLoading(true);
     try {
       const data = await registerUser({
         name,
@@ -41,14 +45,14 @@ const Register = () => {
       });
 
       console.log(data);
+      toast.success("Account created successfully");
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userInfo", JSON.stringify(data));
-
-      alert("Register Successful");
+      navigate("/login");
     } catch (error: any) {
       console.log(error);
-      alert(error.response?.data?.message || "Register failed");
+      toast.error(error.response?.data?.message || "Register failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -121,9 +125,10 @@ const Register = () => {
 
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium shadow-md"
               >
-                Sign Up
+                {loading ? <Loader /> : "Sign Up"}
               </Button>
             </form>
 

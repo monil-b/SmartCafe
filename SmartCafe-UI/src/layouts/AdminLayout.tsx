@@ -17,7 +17,7 @@ const AdminLayout = () => {
         <div className="flex min-h-screen flex-col md:flex-row">
           <Sidebar />
 
-          <main className="flex-1 p-4 md:p-6 lg:p-8">
+          <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
             <div className="mb-4 flex items-center justify-between gap-3 rounded-3xl border border-border/70 bg-card/80 px-4 py-3 shadow-sm backdrop-blur md:hidden">
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">

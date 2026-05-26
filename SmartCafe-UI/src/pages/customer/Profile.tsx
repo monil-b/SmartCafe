@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { updateUserProfile } from "@/api/authApi";
 
+import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,10 +17,12 @@ const Profile = () => {
   const [email, setEmail] = useState(userInfo.email || "");
 
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setLoading(true);
     try {
       await updateUserProfile({
         name,
@@ -32,6 +35,8 @@ const Profile = () => {
       console.log(error);
 
       toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,7 +86,9 @@ const Profile = () => {
                 />
               </div>
 
-              <Button className="w-full">Update Profile</Button>
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? <Loader /> : "Update Profile"}
+              </Button>
             </form>
           </CardContent>
         </Card>

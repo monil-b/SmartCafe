@@ -5,7 +5,7 @@ import { deleteUser, getUsers } from "@/api/authApi";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import {
   Card,
@@ -14,6 +14,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import {
   Table,
@@ -35,6 +44,8 @@ type User = {
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -125,7 +136,10 @@ const Users = () => {
                       <Button
                         size="icon"
                         variant="destructive"
-                        onClick={() => handleDelete(user._id)}
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setDeleteDialogOpen(true);
+                        }}
                       >
                         <Trash2 className="size-4" />
                       </Button>
@@ -137,6 +151,40 @@ const Users = () => {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete user?</DialogTitle>
+            <DialogDescription>
+              This will permanently remove {selectedUser?.name ?? "this user"}{" "}
+              from the system.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                if (!selectedUser) return;
+
+                await handleDelete(selectedUser._id);
+                setDeleteDialogOpen(false);
+                setSelectedUser(null);
+              }}
+            >
+              Confirm Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
