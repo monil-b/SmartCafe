@@ -3,17 +3,29 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCalR3vqlbHTAtEMiPkfA4F9HQonLvUOG0",
+  apiKey:
+    import.meta.env
+      .VITE_FIREBASE_API_KEY,
 
-  authDomain: "smartcafe-577d6.firebaseapp.com",
+  authDomain:
+    import.meta.env
+      .VITE_FIREBASE_AUTH_DOMAIN,
 
-  projectId: "smartcafe-577d6",
+  projectId:
+    import.meta.env
+      .VITE_FIREBASE_PROJECT_ID,
 
-  storageBucket: "smartcafe-577d6.firebasestorage.app",
+  storageBucket:
+    import.meta.env
+      .VITE_FIREBASE_STORAGE_BUCKET,
 
-  messagingSenderId:"929031772303",
+  messagingSenderId:
+    import.meta.env
+      .VITE_FIREBASE_MESSAGING_SENDER_ID,
 
-  appId: "1:929031772303:web:bbf4d4640c774dcb3c78fa",
+  appId:
+    import.meta.env
+      .VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
