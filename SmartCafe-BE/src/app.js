@@ -4,6 +4,7 @@ const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const uploadRoutes = require("./routes/uploadRoutes");
 
 const app = express();
 
@@ -17,5 +18,7 @@ app.use("/api/orders", orderRoutes);
 app.get("/", (req,res) => {
     res.send("SmartCafe API Running");
 });
+
+app.use("/api/upload", uploadRoutes);
 
 module.exports = app;

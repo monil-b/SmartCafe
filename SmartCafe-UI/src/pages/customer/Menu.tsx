@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 import MenuCard from "@/components/menu/MenuCard";
+import Loader from "@/components/common/Loader";
 import { getProducts, type Product } from "@/api/productApi";
 
 import { Button } from "@/components/ui/button";
@@ -43,8 +44,8 @@ const Menu = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <h1 className="text-2xl font-bold">Loading...</h1>
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
+        <Loader className="h-8 w-8" />
       </div>
     );
   }

@@ -5,13 +5,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ShoppingCart, Menu, Coffee, LogOut, User } from "lucide-react";
+import {
+  ShoppingCart,
+  Menu,
+  Coffee,
+  LogOut,
+  User,
+  X as XIcon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState, useEffect } from "react";
 
 import { useCart } from "@/context/CartContext";
 
@@ -19,6 +27,11 @@ const Navbar = () => {
   const location = useLocation();
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "null");
   const { cartItems } = useCart();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   const navLinks = [
     {
@@ -105,6 +118,7 @@ const Navbar = () => {
 
                 <DropdownMenuItem
                   onClick={() => {
+                    localStorage.removeItem("token");
                     localStorage.removeItem("userInfo");
 
                     window.location.href = "/login";
@@ -135,13 +149,16 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline" className="rounded-full">
-                <Menu className="h-5 w-5" />
+                {open ? (
+                  <XIcon className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
               </Button>
             </SheetTrigger>
-
             <SheetContent side="right">
               <div className="mt-10 flex flex-col gap-5">
                 <div className="flex items-center justify-between rounded-2xl border border-border/70 bg-muted/40 px-4 py-3">
@@ -159,30 +176,44 @@ const Navbar = () => {
                   <Link
                     key={link.path}
                     to={link.path}
+                    onClick={() => setOpen(false)}
                     className="text-lg font-medium"
                   >
                     {link.name}
                   </Link>
                 ))}
 
-                <Link to="/cart" className="text-lg font-medium">
+                <Link
+                  to="/cart"
+                  onClick={() => setOpen(false)}
+                  className="text-lg font-medium"
+                >
                   Cart
                 </Link>
 
                 {userInfo ? (
                   <>
-                    <Link to="/profile" className="text-lg font-medium">
+                    <Link
+                      to="/profile"
+                      onClick={() => setOpen(false)}
+                      className="text-lg font-medium"
+                    >
                       Profile
                     </Link>
 
                     {userInfo.role === "admin" && (
-                      <Link to="/admin" className="text-lg font-medium">
+                      <Link
+                        to="/admin"
+                        onClick={() => setOpen(false)}
+                        className="text-lg font-medium"
+                      >
                         Admin Dashboard
                       </Link>
                     )}
 
                     <button
                       onClick={() => {
+                        localStorage.removeItem("token");
                         localStorage.removeItem("userInfo");
 
                         window.location.href = "/login";
@@ -194,11 +225,19 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/login" className="text-lg font-medium">
+                    <Link
+                      to="/login"
+                      onClick={() => setOpen(false)}
+                      className="text-lg font-medium"
+                    >
                       Login
                     </Link>
 
-                    <Link to="/register" className="text-lg font-medium">
+                    <Link
+                      to="/register"
+                      onClick={() => setOpen(false)}
+                      className="text-lg font-medium"
+                    >
                       Register
                     </Link>
                   </>

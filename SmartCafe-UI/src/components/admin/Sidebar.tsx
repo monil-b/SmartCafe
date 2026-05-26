@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import {
   LayoutDashboard,
@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { cn } from "@/lib/utils";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-const SidebarContent = () => {
+const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
   const location = useLocation();
 
   const navItems = [
@@ -46,6 +46,7 @@ const SidebarContent = () => {
     <div className="flex h-full flex-col border-r border-border/70 bg-card/90 text-card-foreground shadow-xl backdrop-blur-xl">
       <Link
         to="/"
+        onClick={() => onClose && onClose()}
         className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-background transition hover:bg-muted"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -71,6 +72,7 @@ const SidebarContent = () => {
             <Link
               key={item.to}
               to={item.to}
+              onClick={() => onClose && onClose()}
               className={cn(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all",
                 active
@@ -100,6 +102,14 @@ const SidebarContent = () => {
 };
 
 const Sidebar = () => {
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
+
+  // Close the mobile sheet whenever navigation occurs
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -109,7 +119,7 @@ const Sidebar = () => {
 
       {/* Mobile Sidebar */}
       <div className="p-4 md:hidden">
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
               variant="outline"
@@ -119,9 +129,12 @@ const Sidebar = () => {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-
-          <SheetContent side="left" className="w-[18rem] p-0 bg-card/95">
-            <SidebarContent />
+          <SheetContent
+            side="left"
+            showCloseButton={false}
+            className="w-[18rem] p-0 bg-card/95"
+          >
+            <SidebarContent onClose={() => setOpen(false)} />
           </SheetContent>
         </Sheet>
       </div>

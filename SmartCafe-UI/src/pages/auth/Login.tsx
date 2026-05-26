@@ -1,18 +1,22 @@
 import { useState } from "react";
-import { loginUser } from "../../api/authApi";
+import { loginUser, googleLogin } from "../../api/authApi";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Loader from "@/components/common/Loader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -26,6 +30,7 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setLoading(true);
     try {
       const data = await loginUser({
         email,
@@ -34,20 +39,37 @@ const Login = () => {
 
       console.log(data);
 
-      localStorage.setItem("token", data.token);
+      toast.success("OTP sent to email");
+
+      navigate("/verify-otp", {
+        state: {
+          email: data.email,
+        },
+      });
+    } catch (error: any) {
+      console.log(error);
+
+      toast.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const data = await googleLogin();
+
       localStorage.setItem("userInfo", JSON.stringify(data));
 
-      alert("Login Successful");
+      toast.success("Google login successful");
 
       if (data.role === "admin") {
         navigate("/admin");
       } else {
         navigate("/");
       }
-    } catch (error: any) {
-      console.log(error);
-
-      alert(error.response?.data?.message || "Login failed");
+    } catch (error) {
+      toast.error("Google login failed");
     }
   };
 
@@ -97,11 +119,21 @@ const Login = () => {
                 />
               </div>
 
+              <div className="text-right">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-orange-500 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium shadow-md"
               >
-                Sign In
+                {loading ? <Loader /> : "Sign In"}
               </Button>
             </form>
 
@@ -114,7 +146,10 @@ const Login = () => {
             </div>
 
             <div className="mt-4">
-              <button className="w-full flex items-center justify-center gap-3 rounded-md border border-input bg-background py-2 text-foreground transition-colors hover:bg-muted">
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full flex items-center justify-center gap-3 rounded-md border border-input bg-background py-2 text-foreground transition-colors hover:bg-muted"
+              >
                 <svg
                   className="w-5 h-5"
                   viewBox="0 0 533.5 544.3"

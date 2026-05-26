@@ -7,9 +7,11 @@ import {
   type ProductData,
 } from "@/api/adminProductApi";
 import { getProducts } from "@/api/productApi";
+import { uploadImage } from "@/api/uploadApi";
 
 import { toast } from "sonner";
 
+import Loader from "@/components/common/Loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,7 +63,12 @@ type Product = {
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editProductId, setEditProductId] = useState<string | null>(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     price: "",
@@ -89,6 +96,7 @@ const Products = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    setLoading(true);
     try {
       const productData: ProductData = {
         name: form.name,
@@ -132,22 +140,60 @@ const Products = () => {
       console.log(error);
 
       toast.error("Failed to create product");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (productId: string) => {
+  const handleDelete = async () => {
+    if (!productToDelete?._id) return;
+
+    setDeleteLoading(true);
+
     try {
-      await deleteProduct(productId);
+      await deleteProduct(productToDelete._id);
 
       setProducts((prevProducts) =>
-        prevProducts.filter((product) => product._id !== productId),
+        prevProducts.filter((product) => product._id !== productToDelete._id),
       );
 
       toast.success("Product deleted");
+
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
     } catch (error) {
       console.log(error);
 
       toast.error("Delete failed");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setImageUploading(true);
+
+      const imageUrl = await uploadImage(file);
+
+      setForm((current) => ({
+        ...current,
+        image: imageUrl,
+      }));
+
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Image upload failed");
+    } finally {
+      setImageUploading(false);
     }
   };
 
@@ -280,19 +326,28 @@ const Products = () => {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="image">Image URL</Label>
+                  <Label htmlFor="image">Product Image</Label>
 
                   <Input
                     id="image"
-                    value={form.image}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        image: event.target.value,
-                      }))
-                    }
-                    placeholder="https://example.com/burger.jpg"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
                   />
+
+                  {imageUploading && (
+                    <p className="text-sm text-muted-foreground">
+                      Uploading image...
+                    </p>
+                  )}
+
+                  {form.image && (
+                    <img
+                      src={form.image}
+                      alt="Preview"
+                      className="h-32 w-32 rounded-xl object-cover border"
+                    />
+                  )}
                 </div>
 
                 <div className="grid gap-2">
@@ -312,7 +367,9 @@ const Products = () => {
                 </div>
 
                 <DialogFooter>
-                  <Button type="submit">Save Product</Button>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? <Loader /> : "Save Product"}
+                  </Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -421,7 +478,10 @@ const Products = () => {
                       <Button
                         size="icon-sm"
                         variant="destructive"
-                        onClick={() => handleDelete(product._id!)}
+                        onClick={() => {
+                          setProductToDelete(product);
+                          setDeleteDialogOpen(true);
+                        }}
                         aria-label={`Delete ${product.name}`}
                         title="Delete"
                       >
@@ -435,6 +495,46 @@ const Products = () => {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+
+          if (!open) {
+            setProductToDelete(null);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete product?</DialogTitle>
+            <DialogDescription>
+              This will permanently remove{" "}
+              {productToDelete?.name || "this product"}
+              from the menu.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={deleteLoading}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

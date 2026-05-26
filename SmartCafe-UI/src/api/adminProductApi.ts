@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api/products";
+const API_URL = `${import.meta.env.VITE_API_URL}/products`;
 
 export interface ProductData {
   name: string;

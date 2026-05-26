@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { createOrder } from "@/api/orderApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Loader from "@/components/common/Loader";
 import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const isAuthenticated = Boolean(localStorage.getItem("token"));
   const { cartItems, addToCart, removeFromCart, decreaseQuantity, clearCart } =
     useCart();
 
@@ -39,6 +43,21 @@ const Cart = () => {
   );
 
   const handleCheckout = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Please login to continue checkout");
+      navigate("/login", {
+        replace: true,
+        state: {
+          from: "/cart",
+        },
+      });
+
+      return;
+    }
+
+    setLoading(true);
     try {
       const orderItems = cartItems.map((item) => ({
         name: item.name,
@@ -57,7 +76,27 @@ const Cart = () => {
     } catch (error) {
       console.log(error);
 
+      const status = (error as { response?: { status?: number } }).response
+        ?.status;
+
+      if (status === 401 || status === 403) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userInfo");
+
+        toast.error("Please login to continue checkout");
+        navigate("/login", {
+          replace: true,
+          state: {
+            from: "/cart",
+          },
+        });
+
+        return;
+      }
+
       toast.error("Failed to place order");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -147,12 +186,24 @@ const Cart = () => {
                 </div>
               </div>
 
-              <Button
-                className="mt-6 w-full rounded-full bg-primary hover:bg-primary/90"
-                onClick={handleCheckout}
-              >
-                Proceed to Checkout
-              </Button>
+              {isAuthenticated ? (
+                <Button
+                  disabled={loading}
+                  className="mt-6 w-full rounded-full bg-primary hover:bg-primary/90"
+                  onClick={handleCheckout}
+                >
+                  {loading ? <Loader /> : "Proceed to Checkout"}
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  className="mt-6 w-full rounded-full bg-primary hover:bg-primary/90"
+                >
+                  <Link to="/login" state={{ from: "/cart" }}>
+                    Login to Checkout
+                  </Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>

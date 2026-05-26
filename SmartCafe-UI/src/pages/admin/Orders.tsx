@@ -20,11 +20,10 @@ type Order = {
   totalPrice: number;
   status: string;
   createdAt: string;
-
-  user: {
-    name: string;
-    email: string;
-  };
+  user?: {
+    name?: string | null;
+    email?: string | null;
+  } | null;
 };
 
 const Orders = () => {
@@ -83,7 +82,7 @@ const Orders = () => {
                   </h2>
 
                   <p className="text-sm text-muted-foreground">
-                    {order.user.name} • {order.user.email}
+                    {order.user?.name ?? "Guest"} • {order.user?.email ?? "-"}
                   </p>
 
                   <p className="text-sm text-muted-foreground">
