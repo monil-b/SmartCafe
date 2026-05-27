@@ -13,7 +13,7 @@ const sendEmail = async (options) => {
     });
 
     await transporter.sendMail({
-      from: process.env.BREVO_EMAIL,
+      from: "monilintech@gmail.com",
       to: options.email,
       subject: options.subject,
       text: options.message,
