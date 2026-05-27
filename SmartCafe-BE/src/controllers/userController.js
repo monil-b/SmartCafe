@@ -416,6 +416,7 @@ const googleLogin = async (
         email,
       });
 
+    // If user does not exist
     if (!user) {
       user = await User.create({
         name,
@@ -425,6 +426,7 @@ const googleLogin = async (
       });
     }
 
+    // Existing user OR new user
     res.json({
       _id: user._id,
       name: user.name,

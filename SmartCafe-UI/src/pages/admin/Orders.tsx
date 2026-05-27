@@ -38,8 +38,7 @@ const Orders = () => {
       const data = await getAllOrders();
 
       setOrders(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
     }
   };
 
@@ -54,8 +53,7 @@ const Orders = () => {
       );
 
       toast.success("Order marked delivered");
-    } catch (error) {
-      console.log(error);
+    } catch {
 
       toast.error("Failed to update order");
     }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { loginUser, googleLogin } from "../../api/authApi";
 import { ArrowLeft } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,7 +12,6 @@ import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,8 +36,6 @@ const Login = () => {
         password,
       });
 
-      console.log(data);
-
       toast.success("OTP sent to email");
 
       navigate("/verify-otp", {
@@ -47,8 +44,6 @@ const Login = () => {
         },
       });
     } catch (error: any) {
-      console.log(error);
-
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
@@ -60,6 +55,7 @@ const Login = () => {
       const data = await googleLogin();
 
       localStorage.setItem("userInfo", JSON.stringify(data));
+      localStorage.setItem("token", data.token);
 
       toast.success("Google login successful");
 

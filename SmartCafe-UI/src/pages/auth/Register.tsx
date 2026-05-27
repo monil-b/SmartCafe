@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { registerUser } from "../../api/authApi";
+import { registerUser, googleLogin } from "../../api/authApi";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -38,21 +38,38 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const data = await registerUser({
+      await registerUser({
         name,
         email,
         password,
       });
 
-      console.log(data);
       toast.success("Account created successfully");
 
       navigate("/login");
     } catch (error: any) {
-      console.log(error);
       toast.error(error.response?.data?.message || "Register failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const data = await googleLogin();
+
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      localStorage.setItem("token", data.token);
+
+      toast.success("Google login successful");
+
+      if (data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Google login failed");
     }
   };
 
@@ -141,7 +158,10 @@ const Register = () => {
             </div>
 
             <div className="mt-4">
-              <button className="w-full flex items-center justify-center gap-3 rounded-md border border-input bg-background py-2 text-foreground transition-colors hover:bg-muted">
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full flex items-center justify-center gap-3 rounded-md border border-input bg-background py-2 text-foreground transition-colors hover:bg-muted"
+              >
                 <svg
                   className="w-5 h-5"
                   viewBox="0 0 533.5 544.3"

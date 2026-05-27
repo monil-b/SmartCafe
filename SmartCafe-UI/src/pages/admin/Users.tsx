@@ -56,8 +56,7 @@ const Users = () => {
       const data = await getUsers();
 
       setUsers(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
     }
   };
 
@@ -68,8 +67,7 @@ const Users = () => {
       setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
 
       toast.success("User deleted");
-    } catch (error) {
-      console.log(error);
+    } catch {
 
       toast.error("Failed to delete user");
     }

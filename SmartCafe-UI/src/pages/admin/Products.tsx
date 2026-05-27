@@ -86,8 +86,7 @@ const Products = () => {
     try {
       const data = await getProducts();
       setProducts(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
     }
   };
 
@@ -136,8 +135,7 @@ const Products = () => {
       setEditProductId(null);
 
       setDialogOpen(false);
-    } catch (error) {
-      console.log(error);
+    } catch {
 
       toast.error("Failed to create product");
     } finally {
@@ -161,8 +159,7 @@ const Products = () => {
 
       setDeleteDialogOpen(false);
       setProductToDelete(null);
-    } catch (error) {
-      console.log(error);
+    } catch {
 
       toast.error("Delete failed");
     } finally {
@@ -188,8 +185,7 @@ const Products = () => {
       }));
 
       toast.success("Image uploaded successfully");
-    } catch (error) {
-      console.log(error);
+    } catch {
 
       toast.error("Image upload failed");
     } finally {

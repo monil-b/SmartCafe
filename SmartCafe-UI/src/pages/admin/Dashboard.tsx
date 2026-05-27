@@ -43,8 +43,7 @@ const Dashboard = () => {
       );
 
       setRevenue(totalRevenue);
-    } catch (error) {
-      console.log(error);
+    } catch {
     }
   };
 
