@@ -74,7 +74,6 @@ const Cart = () => {
       clearCart();
       navigate("/orders");
     } catch (error) {
-      console.log(error);
 
       const status = (error as { response?: { status?: number } }).response
         ?.status;

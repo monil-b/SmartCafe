@@ -50,8 +50,7 @@ const Home = () => {
       const data = await getProducts();
 
       setProducts(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
     }
   };
 

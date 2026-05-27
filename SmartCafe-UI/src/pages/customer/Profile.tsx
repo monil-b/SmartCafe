@@ -31,8 +31,7 @@ const Profile = () => {
       });
 
       toast.success("Profile updated successfully");
-    } catch (error) {
-      console.log(error);
+    } catch {
 
       toast.error("Failed to update profile");
     } finally {

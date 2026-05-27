@@ -43,6 +43,7 @@ const VerifyOTP = () => {
       const data = await verifyOTP(email, otp);
 
       localStorage.setItem("userInfo", JSON.stringify(data));
+      localStorage.setItem("token", data.token);
 
       toast.success("Login successful");
 

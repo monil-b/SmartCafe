@@ -36,8 +36,7 @@ const Orders = () => {
       const data = await getMyOrders();
 
       setOrders(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
     }
   };
 
