@@ -6,6 +6,7 @@ const sendEmail = async (options) => {
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
+      family: 4, // force IPv4
 
       auth: {
         user: process.env.EMAIL_USER,
@@ -25,7 +26,6 @@ const sendEmail = async (options) => {
     console.log("Email sent successfully");
   } catch (error) {
     console.log("EMAIL ERROR:", error);
-
     throw error;
   }
 };
