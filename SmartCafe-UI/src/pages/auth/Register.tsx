@@ -38,15 +38,19 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await registerUser({
+      const data = await registerUser({
         name,
         email,
         password,
       });
 
-      toast.success("Account created successfully");
+      toast.success("OTP sent to email");
 
-      navigate("/login");
+      navigate("/verify-otp", {
+        state: {
+          email: data.email,
+        },
+      });
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Register failed");
     } finally {

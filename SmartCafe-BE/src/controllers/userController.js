@@ -23,37 +23,49 @@ const generateOTP = () => {
 };
 
 const registerUser = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-        const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({
+      email,
+    });
 
-        if (userExists) {
-            return res.status(400).json({
-                message: "User already exists",
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const user = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-        });
-
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            token: generateToken(user._id),
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message,
-        });
+    if (userExists) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
     }
+
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
+
+    const otp = generateOTP();
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      otp,
+      otpExpire:
+        Date.now() + 5 * 60 * 1000,
+    });
+
+    await sendEmail({
+      email: user.email,
+      subject:
+        "SmartCafe Register OTP",
+      message: `Your OTP is ${otp}`,
+    });
+
+    res.status(201).json({
+      message: "OTP sent to email",
+      email: user.email,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 const loginUser = async (req, res) => {
