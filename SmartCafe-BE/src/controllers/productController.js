@@ -3,7 +3,7 @@ const Product = require("../models/Product");
 // GET PRODUCTS
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().lean();
 
     res.json(products);
   } catch (error) {

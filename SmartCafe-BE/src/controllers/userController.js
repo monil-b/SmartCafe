@@ -221,7 +221,7 @@ const getUsers = async (req, res) => {
   try {
     const users = await User.find().select(
       "-password"
-    );
+    ).lean();
 
     res.json(users);
   } catch (error) {

@@ -30,7 +30,7 @@ const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({
       user: req.user._id,
-    });
+    }).lean();
 
     res.json(orders);
   } catch (error) {
@@ -46,7 +46,7 @@ const getAllOrders = async (req, res) => {
     const orders = await Order.find().populate(
       "user",
       "name email"
-    );
+    ).lean();
 
     res.json(orders);
   } catch (error) {

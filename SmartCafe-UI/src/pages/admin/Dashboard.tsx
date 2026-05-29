@@ -25,16 +25,14 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const users = await getUsers();
-
-      const products = await getProducts();
-
-      const orders = await getAllOrders();
+      const [users, products, orders] = await Promise.all([
+        getUsers(),
+        getProducts(),
+        getAllOrders(),
+      ]);
 
       setTotalUsers(users.length);
-
       setTotalProducts(products.length);
-
       setTotalOrders(orders.length);
 
       const totalRevenue = orders.reduce(
@@ -43,7 +41,8 @@ const Dashboard = () => {
       );
 
       setRevenue(totalRevenue);
-    } catch {
+    } catch (error) {
+      console.error(error);
     }
   };
 
