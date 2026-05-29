@@ -56,8 +56,7 @@ const Users = () => {
       const data = await getUsers();
 
       setUsers(data);
-    } catch {
-    }
+    } catch {}
   };
 
   const handleDelete = async (userId: string) => {
@@ -68,7 +67,6 @@ const Users = () => {
 
       toast.success("User deleted");
     } catch {
-
       toast.error("Failed to delete user");
     }
   };
@@ -138,6 +136,8 @@ const Users = () => {
                           setSelectedUser(user);
                           setDeleteDialogOpen(true);
                         }}
+                        aria-label={`Delete ${user.name}`}
+                        title={`Delete ${user.name}`}
                       >
                         <Trash2 className="size-4" />
                       </Button>

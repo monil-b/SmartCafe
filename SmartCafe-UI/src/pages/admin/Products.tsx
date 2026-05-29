@@ -86,8 +86,7 @@ const Products = () => {
     try {
       const data = await getProducts();
       setProducts(data);
-    } catch {
-    }
+    } catch {}
   };
 
   const productCount = useMemo(() => products.length, [products]);
@@ -136,7 +135,6 @@ const Products = () => {
 
       setDialogOpen(false);
     } catch {
-
       toast.error("Failed to create product");
     } finally {
       setLoading(false);
@@ -160,7 +158,6 @@ const Products = () => {
       setDeleteDialogOpen(false);
       setProductToDelete(null);
     } catch {
-
       toast.error("Delete failed");
     } finally {
       setDeleteLoading(false);
@@ -186,7 +183,6 @@ const Products = () => {
 
       toast.success("Image uploaded successfully");
     } catch {
-
       toast.error("Image upload failed");
     } finally {
       setImageUploading(false);
@@ -341,6 +337,7 @@ const Products = () => {
                     <img
                       src={form.image}
                       alt="Preview"
+                      loading="lazy"
                       className="h-32 w-32 rounded-xl object-cover border"
                     />
                   )}
@@ -408,6 +405,7 @@ const Products = () => {
                       <img
                         src={product.image || "/placeholder.jpg"}
                         alt={product.name}
+                        loading="lazy"
                         className="h-14 w-14 rounded-xl object-cover border"
                       />
 

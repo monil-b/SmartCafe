@@ -74,7 +74,6 @@ const Cart = () => {
       clearCart();
       navigate("/orders");
     } catch (error) {
-
       const status = (error as { response?: { status?: number } }).response
         ?.status;
 
@@ -120,6 +119,7 @@ const Cart = () => {
                   <img
                     src={item.image}
                     alt={item.name}
+                    loading="lazy"
                     className="h-24 w-24 rounded-2xl object-cover"
                   />
 

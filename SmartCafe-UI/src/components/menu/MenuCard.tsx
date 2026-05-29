@@ -22,6 +22,7 @@ const MenuCard = ({ _id, name, price, image, description }: MenuCardProps) => {
           <img
             src={image || "/placeholder.jpg"}
             alt={name}
+            loading="lazy"
             className="h-56 w-full object-cover"
           />
 

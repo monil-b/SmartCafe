@@ -18,7 +18,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 
 import { useCart } from "@/context/CartContext";
@@ -151,7 +158,13 @@ const Navbar = () => {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button size="icon" variant="outline" className="rounded-full">
+              <Button
+                size="icon"
+                variant="outline"
+                className="rounded-full"
+                aria-label={open ? "Close menu" : "Open menu"}
+                title={open ? "Close menu" : "Open menu"}
+              >
                 {open ? (
                   <XIcon className="h-5 w-5" />
                 ) : (
@@ -160,6 +173,10 @@ const Navbar = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+                <SheetDescription>Navigation menu</SheetDescription>
+              </SheetHeader>
               <div className="mt-10 flex flex-col gap-5">
                 <div className="flex items-center justify-between rounded-2xl border border-border/70 bg-muted/40 px-4 py-3">
                   <div>

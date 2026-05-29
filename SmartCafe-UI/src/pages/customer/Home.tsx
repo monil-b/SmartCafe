@@ -50,8 +50,7 @@ const Home = () => {
       const data = await getProducts();
 
       setProducts(data);
-    } catch {
-    }
+    } catch {}
   };
 
   return (
@@ -179,6 +178,7 @@ const Home = () => {
                     <img
                       src={item.image}
                       alt={item.name}
+                      loading="lazy"
                       className="h-56 w-full object-cover"
                     />
 

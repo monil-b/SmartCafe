@@ -11,7 +11,14 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -125,6 +132,8 @@ const Sidebar = () => {
               variant="outline"
               size="icon"
               className="rounded-2xl bg-card/80 shadow-sm backdrop-blur"
+              aria-label={open ? "Close menu" : "Open menu"}
+              title={open ? "Close menu" : "Open menu"}
             >
               <Menu className="h-5 w-5" />
             </Button>
@@ -134,6 +143,10 @@ const Sidebar = () => {
             showCloseButton={false}
             className="w-[18rem] p-0 bg-card/95"
           >
+            <SheetHeader>
+              <SheetTitle>Menu</SheetTitle>
+              <SheetDescription>Navigation menu</SheetDescription>
+            </SheetHeader>
             <SidebarContent onClose={() => setOpen(false)} />
           </SheetContent>
         </Sheet>
